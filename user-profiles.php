@@ -1,55 +1,149 @@
 <?
 
+/*
+    other functions to be called
+*/
 
 function show_agent_profile_individual($agent_object)
 {
+    //grab ID and email from argument object, grab the rest from meta tags, assemble First and Last name
     $user_id = $agent_object->ID;
-    $email_address= $agent_object->user_email;
+    $email_address = $agent_object->user_email;
     $agent_number = get_user_meta($user_id, 'agent_number', true);
     $first_name = get_user_meta($user_id, 'first_name', true);
     $last_name = get_user_meta($user_id, 'last_name', true);
-    // $email_address = get_user_meta($user_id, 'user_email', true);
     $phone_number = get_user_meta($user_id, 'phone_number', true);
-    // $css_id = '#'.$agent_number;
-    $css_class = '.'.$agent_number;
-    $popover = 'popover-'.$agent_number;
-
     $agent_name = $first_name . ' ' . $last_name;
-
-    //html block from Avada builder. Does "fusion-person-n" need to be counted and updated? or can they all be the same class?
-    $opening_div = '<div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
 
     //check for profile pic, use Logo as default if no profile
     $default_pic = "https://thejohnson.group/wp-content/uploads/2021/02/BlackTextLogo.png";
     $pic_url = '';
     $request_profile_pic = get_user_meta($user_id, 'profile_pic_url', true);
-
-    // var_dump($request_profile_pic);
-
     if (empty($request_profile_pic)) {
         $pic_url = $default_pic;
     } else {
         $pic_url = $request_profile_pic;
     }
 
-    //insert profile pic, agent name, and link to individual profile page by agent number
-    $img_a_end_div = '<a href="https://thejohnson.group/agent-portal/agent/profile/?agent_id=' . $agent_number . '" target="_blank"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
 
-    //name, agent number, additional text, close div
-    $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">'. $agent_name .'</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
-    $text_block = '<div class="person-content fusion-clearfix"> <p>Email Address: <a href="mailto:'. $email_address .'" target="_blank">'. ((!empty($email_address)) ? $email_address : 'No Email Address') .'</a><br />Phone Number: <a href="tel:'. $phone_number . '" target="_blank">'. ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
-    $text_addendum = '<ul><li><a href="#" target="_blank">Presentation Review</a></li> <li class="testScores">score shortcode here</li> <li><a href="#" target="_blanks">Pending Business</a></li></ul>';
+    // get test scores and return icons
+    $badge_HTML = calculate_presentation_badges($agent_object);
+
+    //HTML sections with css from Avada
+    $opening_div = '<div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
+    $img_a_end_div = '<a href="https://thejohnson.group/agent-portal/agent/profile/?agent_id=' . $agent_number . '" target="_blank"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
+    $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
+    $text_block = '<div class="person-content fusion-clearfix"> <p>Email Address: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
+    $badges = '<ul><li><a href="#" target="_blank">Presentation Proficiency</a></li> <li class="testScores">'. $badge_HTML .'</li> <li><a href="#" target="_blanks">Pending Business</a></li></ul>';
     $close_divs = '</div> </div> </div>';
 
-     
-    $assembled_HTML = $opening_div . $img_a_end_div . $name_and_agent_number . $text_block . $text_addendum .  $close_divs;
+    //put the profile block together and return it to display_agent_hierarchy()
+    $assembled_HTML = $opening_div . $img_a_end_div . $name_and_agent_number . $text_block . $badges .  $close_divs;
+
+
+    //scratch area to run calculate_presentation_badges
+
     return $assembled_HTML;
 }
+
+function calculate_presentation_badges($arg) {
+
+    // Grab user object's ID and get_user_meta for the agent number
+    $badgeAgentID = $arg->ID;
+    $badgeAgentNumber = get_user_meta($badgeAgentID, 'agent_number', true);
+
+    // the four presentation review form ids (assuming 63, 64, 65 are correct)
+    $badgeFormIDs = array( '62', '63', '64', '65' );
+
+    // Field 11 will need to be the agent number field on EVERY FORM until I better understand arrays
+    $badgeGFAPIQuery['field_filters'][] = array(
+        'key' => '11',
+        'value' => $badgeAgentNumber
+    );
+
+    // instantiate arrays
+    $presentationTrainingSubmissions = array();
+    $iteratedResults = array();
+    $examDates = array();
+
+    // get all form submissions for agent for the four forms and fill array
+    foreach ($badgeFormIDs as $formID) {
+        $presentationTrainingSubmissions[] = GFAPI::get_entries($formID, $badgeGFAPIQuery);
+    }
+
+    // add most recent result to array
+    // also create array of most recent date submitted
+    foreach ($presentationTrainingSubmissions as $key => $value ) {
+        $iteratedResults[] = $presentationTrainingSubmissions[$key][0]['16'];
+        $examDates[] = (!is_null($presentationTrainingSubmissions[$key][0]['13'])) ? date('m/d/Y', strtotime($presentationTrainingSubmissions[$key][0]['13'])) : 'Untaken';
+    }
+
+    // open the flexbox and remove list styles
+    $iconSet = '<div class="iconSetContainer"><ul class="checkboxIcons">';
+
+    $passIconHTML = '<li class="passIcon">';
+    $failIconHTML = '<li class="failIcon">';
+    $nullIconHTML = '<li class="nullIcon">';
+    $iconHeader = '';
+    
+    foreach ($iteratedResults as $key => $value ) {
+        
+        //assign icon header based on quiz number
+        switch ($key) {
+            case '0':
+                $iconHeader = '<div class="iconHeader">25%</div><i class="fa fa-check-square" title="Presentation Proficiency: 25%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                break;
+            case '1':
+                $iconHeader = '<div class="iconHeader">50%</div><i class="fa fa-check-square" title="Presentation Proficiency: 50%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                break;
+            case '2':
+                $iconHeader = '<div class="iconHeader">75%</div><i class="fa fa-check-square" title="Presentation Proficiency: 75%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                break;
+            case '3':
+                $iconHeader = '<div class="iconHeader">100%</div><i class="fa fa-check-square" title="Presentation Proficiency: 100%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                break;
+        }
+
+        //assign icon color based on pass/fail, append header from $iconHeader
+        switch ($value) {
+            case 'pass':
+                $iconSet .= $passIconHTML . $iconHeader;
+                break;
+            case 'fail':
+                $iconSet .= $failIconHTML . $iconHeader;
+                break;
+            default:
+                $iconSet .= $nullIconHTML . $iconHeader;
+                break;
+        }
+    }
+    $iconSet .= '</ul></div>';
+
+    // print('<pre>');
+    // var_dump($iteratedResults);
+    // print('</pre>');
+
+    // print('<pre> $presentationTrainingSubmissions[0][0]["16"] '. $presentationTrainingSubmissions[0][0]['16'] . '</pre>');
+    // print('GFAPI Query for agent ' . $badgeAgentNumber . ': <pre>');
+    // var_dump($presentationTrainingSubmissions);
+    // print('</pre>');
+
+
+
+    $outgoingHTML = $iconSet;
+    
+    return $outgoingHTML;
+}
+
+
+/*
+    Begin Shortcode
+*/
 
 function display_agent_hierarchy()
 {
 
-    // Check for agent_id parameter. If not provided, use the currently logged in user. If provided, use the User Object associated with that Agent Number
+    // Check for agent_id parameter, get user's ID from WP User object. If not provided, use the currently logged in user.
     if (!isset($_GET['agent_id'])) {
         $userToDisplay = get_current_user_id();
     } else {
@@ -58,15 +152,15 @@ function display_agent_hierarchy()
             'meta_value' => $_GET['agent_id']
         );
         $getUserObject = get_users($query);
-        foreach ( $getUserObject as $user ) {
+        foreach ($getUserObject as $user) {
             $userToDisplay = $user->ID;
         }
     }
 
-    //assign meta values
+    // Get meta values
     $agentNumber = get_user_meta($userToDisplay, 'agent_number', true);
     $agentPosition = get_user_meta($userToDisplay, 'agent_position', true);
-    
+
     //if Agency Owner is viewing, query all users with all relevant roles
     if ($agentPosition == 'Agency Owner') {
         $downlineQuery = array(
@@ -90,26 +184,24 @@ function display_agent_hierarchy()
                 )
             )
         );
-    } else {   
-        //pull Users object by searching if this agentNumber exists in someone's Supervisor field
+    } else {
+        // Select all users where saNumber = $agentNumber
         $downlineQuery = array(
             'meta_key' => 'saNumber',
             'meta_value' => $agentNumber
         );
     }
 
+    // ask for an array of Users, begin empty string
     $findDownline = get_users($downlineQuery);
-
-    //put a blank html to be filled momentarily
     $hierarchyHTML = '';
 
-    // var_dump($findDownline);
-    // print_r($findDownline);
-
+    // run the profile builder for each User in the array
     foreach ($findDownline as $agent) {
         $hierarchyHTML .= show_agent_profile_individual($agent);
     }
 
+    // Display all returned HTML
     return $hierarchyHTML;
 }
 
