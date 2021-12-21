@@ -16,7 +16,7 @@ function show_agent_profile_individual($agent_object)
     $agent_name = $first_name . ' ' . $last_name;
 
     //check for profile pic, use Logo as default if no profile
-    $default_pic = "https://thejohnson.group/wp-content/uploads/2021/02/BlackTextLogo.png";
+    $default_pic = "https://thejohnson.group/wp-content/uploads/default.png";
     $pic_url = '';
     $request_profile_pic = get_user_meta($user_id, 'profile_pic_url', true);
     if (empty($request_profile_pic)) {
@@ -81,14 +81,25 @@ function calculate_presentation_badges($arg) {
     // open the flexbox and remove list styles
     $iconSet = '<div class="iconSetContainer"><ul class="checkboxIcons">';
 
-    $passIconHTML = '<li class="passIcon">';
-    $failIconHTML = '<li class="failIcon">';
-    $nullIconHTML = '<li class="nullIcon">';
+    $passIconContainer = '<li class="passIcon">';
+    $failIconContainer = '<li class="failIcon">';
+    $nullIconContainer = '<li class="nullIcon">';
     $iconHeader = '';
+    $passFailIcon = '';
+
+    /*
+
+    Need to figure out a way to do the following:
+        Display Icon fa-check-square in a green color when condition = Pass
+        display icon fa-times-square in a red color when condition = fail
+        display icon fa-exclamation-square in a yellow color when condition = [add a condition to forms 63 and 64]
+
+    */
+
     
     foreach ($iteratedResults as $key => $value ) {
         
-        //assign icon header based on quiz number
+        //assign icon header text based on quiz number
         switch ($key) {
             case '0':
                 $iconHeader = '<div class="iconHeader">25%</div><i class="fa fa-check-square" title="Presentation Proficiency: 25%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
@@ -107,13 +118,13 @@ function calculate_presentation_badges($arg) {
         //assign icon color based on pass/fail, append header from $iconHeader
         switch ($value) {
             case 'pass':
-                $iconSet .= $passIconHTML . $iconHeader;
+                $iconSet .= $passIconContainer . $iconHeader;
                 break;
             case 'fail':
-                $iconSet .= $failIconHTML . $iconHeader;
+                $iconSet .= $failIconContainer . $iconHeader;
                 break;
             default:
-                $iconSet .= $nullIconHTML . $iconHeader;
+                $iconSet .= $nullIconContainer . $iconHeader;
                 break;
         }
     }
