@@ -13,6 +13,7 @@ function show_agent_profile_individual($agent_object, $sa_Number)
     $first_name = get_user_meta($user_id, 'first_name', true);
     $last_name = get_user_meta($user_id, 'last_name', true);
     $phone_number = get_user_meta($user_id, 'phone_number', true);
+    $agent_position = get_user_meta($user_id, 'agent_position', true);
     $agent_name = $first_name . ' ' . $last_name;
 
     //check for profile pic, use Logo as default if no profile
@@ -28,22 +29,56 @@ function show_agent_profile_individual($agent_object, $sa_Number)
 
     // get test scores and return icons
     $badge_HTML = create_presentation_badges($agent_object, $sa_Number);
+    $downline_HTML = ask_for_downline($agent_number, $first_name);
 
     //HTML sections with css from Avada
     $opening_div = '<div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
-    $img_a_end_div = '<a href="https://thejohnson.group/agent-portal/agent/profile/?agent_id=' . $agent_number . '" target="_blank"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
+    $img_a_end_div = '<a href="#"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
-    $badges = '<ul><li><strong>Presentation Training</strong></li><li class="testScores">' . $badge_HTML . '</li> <li><a href="https://thejohnson.group/agent-portal/agent/pending-business/?view_agent="' . $agent_number . '" target="_blank">' . $first_name . '\'s Pending Business</a></li></ul>';
+    $badges = '<ul><li><strong>Presentation Training</strong></li><li class="testScores">' . $badge_HTML . '</li> <li><a href="#">' . $first_name . '\'s Pending Business</a></li></ul>' . $downline_HTML;
     $close_divs = '</div> </div> </div>';
 
     //put the profile block together and return it to display_agent_hierarchy()
     $assembled_HTML = $opening_div . $img_a_end_div . $name_and_agent_number . $text_block . $badges .  $close_divs;
 
+    return $assembled_HTML; // sends back the assembled block of information for the agent, Profile picture, and presentation training status
+}
 
-    //scratch area to run create_presentation_badges
+function ask_for_downline($downline__number, $leader__name)
+{
 
-    return $assembled_HTML;
+    // ask for all agents that have the PERSON ELEMENT's agent number as their saNumber
+    $downline__meta__query = array(
+        'meta_key' => 'saNumber',
+        'meta_value' => $downline__number
+    );
+
+    //return array of data that contains all users that match
+    $downline__agents = get_users($downline__meta__query);
+
+    // wrap all output in checking to see if the agent query was empty, otherwise null return
+    if (!empty($downline__agents)) {
+
+        //build layout components
+        $team__container = '<div class="teamContainer"><div class="teamHeader"><p>' . $leader__name . '\'s Team: </p></div><ul class="teamList">';
+        $team__items = '';
+        $view__team__button = '<div class="viewTeamButton"><a href="https://thejohnson.group/agent-portal/quality-portal/agent-training/?agent_id=' . $downline__number . '" target="_blank"><button class="fusion-button button-3d button-large button-default button-2 fusion-button-span-no">View ' . $leader__name . '\'s Team</button></a></div>';
+
+        //iterate over get_users data and add list items
+        foreach ($downline__agents as $agent) {
+            $agent__number = get_user_meta($agent->ID, 'agent_number', true);
+            $agent__name = $agent->display_name;
+            $team__items .= '<li class="teamMember"><a href="#" title="' . $agent__name . '">' . $agent__name . ' - ' . $agent__number . '</a></li>';
+        }
+
+        //append list of agents and view team button, button up the divs
+        $team__container .= $team__items . '</ul>' . $view__team__button . '</div>';
+
+        return $team__container; //return some HTML about containing that agent's team to show_agent_profile_individual
+    } else {
+        return null;
+    }
 }
 
 function create_presentation_badges($arg, $sa__Number)
