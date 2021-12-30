@@ -4,7 +4,7 @@
     other functions to be called
 */
 
-function show_agent_profile_individual($agent_object)
+function show_agent_profile_individual($agent_object, $sa_Number)
 {
     //grab ID and email from argument object, grab the rest from meta tags, assemble First and Last name
     $user_id = $agent_object->ID;
@@ -27,14 +27,14 @@ function show_agent_profile_individual($agent_object)
 
 
     // get test scores and return icons
-    $badge_HTML = calculate_presentation_badges($agent_object);
+    $badge_HTML = calculate_presentation_badges($agent_object, $sa_Number);
 
     //HTML sections with css from Avada
     $opening_div = '<div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
     $img_a_end_div = '<a href="https://thejohnson.group/agent-portal/agent/profile/?agent_id=' . $agent_number . '" target="_blank"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
-    $text_block = '<div class="person-content fusion-clearfix"> <p>Email Address: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
-    $badges = '<ul><li><a href="#" target="_blank">Presentation Proficiency</a></li> <li class="testScores">'. $badge_HTML .'</li> <li><a href="#" target="_blanks">Pending Business</a></li></ul>';
+    $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
+    $badges = '<ul><li><strong>Presentation Training</strong></li><li class="testScores">'. $badge_HTML .'</li> <li><a href="https://thejohnson.group/agent-portal/agent/pending-business/?view_agent="'.$agent_number.'" target="_blank">'.$first_name.'\'s Pending Business</a></li></ul>';
     $close_divs = '</div> </div> </div>';
 
     //put the profile block together and return it to display_agent_hierarchy()
@@ -46,46 +46,73 @@ function show_agent_profile_individual($agent_object)
     return $assembled_HTML;
 }
 
-function calculate_presentation_badges($arg) {
+function calculate_presentation_badges($arg, $sa__Number) {
 
     // Grab user object's ID and get_user_meta for the agent number
     $badgeAgentID = $arg->ID;
     $badgeAgentNumber = get_user_meta($badgeAgentID, 'agent_number', true);
 
-    // the four presentation review form ids (assuming 63, 64, 65 are correct)
-    $badgeFormIDs = array( '62', '63', '64', '65' );
+    // revised to new presentation form 67 with relevant Grade fields for pass/fail/tryagain
+    $badgeFormIDs = '67';
+    $badgeGradeIDs = array('16', '30', '42', '50');
 
-    // Field 11 will need to be the agent number field on EVERY FORM until I better understand arrays
+    // Field 11 is agent number
     $badgeGFAPIQuery['field_filters'][] = array(
         'key' => '11',
         'value' => $badgeAgentNumber
     );
 
     // instantiate arrays
-    $presentationTrainingSubmissions = array();
+    //$presentationTrainingSubmissions = array();
     $iteratedResults = array();
-    $examDates = array();
+      
+    // new foreach for new form
+    $presentationTrainingSubmissions = GFAPI::get_entries($badgeFormIDs, $badgeGFAPIQuery);
+    $examDate = (!is_null($presentationTrainingSubmissions[0][13])) ? date('m/d/Y', strtotime($presentationTrainingSubmissions[0][13])) : 'Untaken';
 
-    // get all form submissions for agent for the four forms and fill array
-    foreach ($badgeFormIDs as $formID) {
-        $presentationTrainingSubmissions[] = GFAPI::get_entries($formID, $badgeGFAPIQuery);
+    foreach ( $badgeGradeIDs as $value ) {
+        //print('<h1>'.$value.'</h1><h1>'.$presentationTrainingSubmissions[0][$value].'</h1>');
+        $iteratedResults[] = $presentationTrainingSubmissions[0][$value]; 
     }
-
+    
+    // print('<pre style="margin-bottom:60px;">');
+    // var_dump($presentationTrainingSubmissions[0]);
+    // var_dump($iteratedResults);
+    // print('</pre>');
+    
+    
+    
+    
+    
+    // get all form submissions for agent for the four forms and fill array
+    // foreach ($badgeFormIDs as $formID) {
+    //     $presentationTrainingSubmissions[] = GFAPI::get_entries($formID, $badgeGFAPIQuery);
+    // }
     // add most recent result to array
     // also create array of most recent date submitted
-    foreach ($presentationTrainingSubmissions as $key => $value ) {
-        $iteratedResults[] = $presentationTrainingSubmissions[$key][0]['16'];
-        $examDates[] = (!is_null($presentationTrainingSubmissions[$key][0]['13'])) ? date('m/d/Y', strtotime($presentationTrainingSubmissions[$key][0]['13'])) : 'Untaken';
-    }
+    // foreach ($presentationTrainingSubmissions as $key => $value ) {
+    //     $iteratedResults[] = $presentationTrainingSubmissions[$key][0]['16'];
+    //     $examDates[] = (!is_null($presentationTrainingSubmissions[$key][0]['13'])) ? date('m/d/Y', strtotime($presentationTrainingSubmissions[$key][0]['13'])) : 'Untaken';
+    // }
+
+
+
 
     // open the flexbox and remove list styles
-    $iconSet = '<div class="iconSetContainer"><ul class="checkboxIcons">';
+    // TODO :: change href to be a view report of the entry
+    $iconSet = '<div class="iconSetContainer"><div class="dateTaken">Last Exam: <a href="#">'. $examDate .'</a></div><ul class="checkboxIcons">';
 
     $passIconContainer = '<li class="passIcon">';
+    $passIcon = 'fa fa-check-square';
     $failIconContainer = '<li class="failIcon">';
+    $failIcon = 'fa fa-exclamation-triangle';
+    $tryAgainIconContainer = '<li class="tryAgainIcon">';
+    $tryAgainIcon = 'fa fa-exclamation-triangle';
     $nullIconContainer = '<li class="nullIcon">';
+    $nullIcon = 'fa fa-plus';
+    $examURL = 'https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?';
     $iconHeader = '';
-    $passFailIcon = '';
+    //$passFailIcon = '';
 
     /*
 
@@ -93,6 +120,10 @@ function calculate_presentation_badges($arg) {
         Display Icon fa-check-square in a green color when condition = Pass
         display icon fa-times-square in a red color when condition = fail
         display icon fa-exclamation-square in a yellow color when condition = [add a condition to forms 63 and 64]
+
+        
+
+
 
     */
 
@@ -102,29 +133,33 @@ function calculate_presentation_badges($arg) {
         //assign icon header text based on quiz number
         switch ($key) {
             case '0':
-                $iconHeader = '<div class="iconHeader">25%</div><i class="fa fa-check-square" title="Presentation Proficiency: 25%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                $iconHeader = '<div class="iconHeader">25%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=25" target="_blank">';
                 break;
             case '1':
-                $iconHeader = '<div class="iconHeader">50%</div><i class="fa fa-check-square" title="Presentation Proficiency: 50%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                $iconHeader = '<div class="iconHeader">50%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=50" target="_blank">';
                 break;
             case '2':
-                $iconHeader = '<div class="iconHeader">75%</div><i class="fa fa-check-square" title="Presentation Proficiency: 75%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                $iconHeader = '<div class="iconHeader">75%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=75" target="_blank">';
                 break;
             case '3':
-                $iconHeader = '<div class="iconHeader">100%</div><i class="fa fa-check-square" title="Presentation Proficiency: 100%"></i><div class="iconFooter">'. $examDates[$key] .'</div></li>';
+                $iconHeader = '<div class="iconHeader">100%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=100" target="_blank">';
                 break;
         }
 
         //assign icon color based on pass/fail, append header from $iconHeader
         switch ($value) {
             case 'pass':
-                $iconSet .= $passIconContainer . $iconHeader;
+                // $iconSet .= $passIconContainer . $iconHeader;
+                $iconSet .= $passIconContainer . $iconHeader . '<i class="'. $passIcon .'"></i></li></a>';
                 break;
             case 'fail':
-                $iconSet .= $failIconContainer . $iconHeader;
+                $iconSet .= $failIconContainer . $iconHeader . '<i class="'. $failIcon .'"></i></li></a>'; 
+                break;
+            case 'tryagain':
+                $iconSet .= $tryAgainIconContainer . $iconHeader . '<i class="'. $tryAgainIcon .'"></i></li></a>';
                 break;
             default:
-                $iconSet .= $nullIconContainer . $iconHeader;
+                $iconSet .= $nullIconContainer . $iconHeader . '<i class="'. $nullIcon .'"></i></li></a>';
                 break;
         }
     }
@@ -209,7 +244,7 @@ function display_agent_hierarchy()
 
     // run the profile builder for each User in the array
     foreach ($findDownline as $agent) {
-        $hierarchyHTML .= show_agent_profile_individual($agent);
+        $hierarchyHTML .= show_agent_profile_individual($agent, $agentNumber);
     }
 
     // Display all returned HTML
