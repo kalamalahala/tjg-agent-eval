@@ -27,26 +27,27 @@ function show_agent_profile_individual($agent_object, $sa_Number)
 
 
     // get test scores and return icons
-    $badge_HTML = calculate_presentation_badges($agent_object, $sa_Number);
+    $badge_HTML = create_presentation_badges($agent_object, $sa_Number);
 
     //HTML sections with css from Avada
     $opening_div = '<div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
     $img_a_end_div = '<a href="https://thejohnson.group/agent-portal/agent/profile/?agent_id=' . $agent_number . '" target="_blank"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
-    $badges = '<ul><li><strong>Presentation Training</strong></li><li class="testScores">'. $badge_HTML .'</li> <li><a href="https://thejohnson.group/agent-portal/agent/pending-business/?view_agent="'.$agent_number.'" target="_blank">'.$first_name.'\'s Pending Business</a></li></ul>';
+    $badges = '<ul><li><strong>Presentation Training</strong></li><li class="testScores">' . $badge_HTML . '</li> <li><a href="https://thejohnson.group/agent-portal/agent/pending-business/?view_agent="' . $agent_number . '" target="_blank">' . $first_name . '\'s Pending Business</a></li></ul>';
     $close_divs = '</div> </div> </div>';
 
     //put the profile block together and return it to display_agent_hierarchy()
     $assembled_HTML = $opening_div . $img_a_end_div . $name_and_agent_number . $text_block . $badges .  $close_divs;
 
 
-    //scratch area to run calculate_presentation_badges
+    //scratch area to run create_presentation_badges
 
     return $assembled_HTML;
 }
 
-function calculate_presentation_badges($arg, $sa__Number) {
+function create_presentation_badges($arg, $sa__Number)
+{
 
     // Grab user object's ID and get_user_meta for the agent number
     $badgeAgentID = $arg->ID;
@@ -62,45 +63,22 @@ function calculate_presentation_badges($arg, $sa__Number) {
         'value' => $badgeAgentNumber
     );
 
-    // instantiate arrays
-    //$presentationTrainingSubmissions = array();
+    // instantiate array
     $iteratedResults = array();
-      
+
     // new foreach for new form
     $presentationTrainingSubmissions = GFAPI::get_entries($badgeFormIDs, $badgeGFAPIQuery);
     $examDate = (!is_null($presentationTrainingSubmissions[0][13])) ? date('m/d/Y', strtotime($presentationTrainingSubmissions[0][13])) : 'Untaken';
 
-    foreach ( $badgeGradeIDs as $value ) {
-        //print('<h1>'.$value.'</h1><h1>'.$presentationTrainingSubmissions[0][$value].'</h1>');
-        $iteratedResults[] = $presentationTrainingSubmissions[0][$value]; 
+    foreach ($badgeGradeIDs as $value) {
+
+        $iteratedResults[] = $presentationTrainingSubmissions[0][$value];
     }
-    
-    // print('<pre style="margin-bottom:60px;">');
-    // var_dump($presentationTrainingSubmissions[0]);
-    // var_dump($iteratedResults);
-    // print('</pre>');
-    
-    
-    
-    
-    
-    // get all form submissions for agent for the four forms and fill array
-    // foreach ($badgeFormIDs as $formID) {
-    //     $presentationTrainingSubmissions[] = GFAPI::get_entries($formID, $badgeGFAPIQuery);
-    // }
-    // add most recent result to array
-    // also create array of most recent date submitted
-    // foreach ($presentationTrainingSubmissions as $key => $value ) {
-    //     $iteratedResults[] = $presentationTrainingSubmissions[$key][0]['16'];
-    //     $examDates[] = (!is_null($presentationTrainingSubmissions[$key][0]['13'])) ? date('m/d/Y', strtotime($presentationTrainingSubmissions[$key][0]['13'])) : 'Untaken';
-    // }
-
-
 
 
     // open the flexbox and remove list styles
     // TODO :: change href to be a view report of the entry
-    $iconSet = '<div class="iconSetContainer"><div class="dateTaken">Last Exam: <a href="#">'. $examDate .'</a></div><ul class="checkboxIcons">';
+    $iconSet = '<div class="iconSetContainer"><div class="dateTaken">Last Exam: <a href="#">' . $examDate . '</a></div><ul class="checkboxIcons">';
 
     $passIconContainer = '<li class="passIcon">';
     $passIcon = 'fa fa-check-square';
@@ -112,72 +90,45 @@ function calculate_presentation_badges($arg, $sa__Number) {
     $nullIcon = 'fa fa-plus';
     $examURL = 'https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?';
     $iconHeader = '';
-    //$passFailIcon = '';
 
-    /*
+    foreach ($iteratedResults as $key => $value) {
 
-    Need to figure out a way to do the following:
-        Display Icon fa-check-square in a green color when condition = Pass
-        display icon fa-times-square in a red color when condition = fail
-        display icon fa-exclamation-square in a yellow color when condition = [add a condition to forms 63 and 64]
-
-        
-
-
-
-    */
-
-    
-    foreach ($iteratedResults as $key => $value ) {
-        
         //assign icon header text based on quiz number
         switch ($key) {
             case '0':
-                $iconHeader = '<div class="iconHeader">25%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=25" target="_blank">';
+                $iconHeader = '<div class="iconHeader">25%</div><a href="' . $examURL . 'agent_id=' . $badgeAgentNumber . '&sa=' . $sa__Number . '&form_mode=25" target="_blank">';
                 break;
             case '1':
-                $iconHeader = '<div class="iconHeader">50%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=50" target="_blank">';
+                $iconHeader = '<div class="iconHeader">50%</div><a href="' . $examURL . 'agent_id=' . $badgeAgentNumber . '&sa=' . $sa__Number . '&form_mode=50" target="_blank">';
                 break;
             case '2':
-                $iconHeader = '<div class="iconHeader">75%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=75" target="_blank">';
+                $iconHeader = '<div class="iconHeader">75%</div><a href="' . $examURL . 'agent_id=' . $badgeAgentNumber . '&sa=' . $sa__Number . '&form_mode=75" target="_blank">';
                 break;
             case '3':
-                $iconHeader = '<div class="iconHeader">100%</div><a href="'.$examURL.'agent_id='.$badgeAgentNumber.'&sa='.$sa__Number.'&form_mode=100" target="_blank">';
+                $iconHeader = '<div class="iconHeader">100%</div><a href="' . $examURL . 'agent_id=' . $badgeAgentNumber . '&sa=' . $sa__Number . '&form_mode=100" target="_blank">';
                 break;
         }
 
         //assign icon color based on pass/fail, append header from $iconHeader
         switch ($value) {
             case 'pass':
-                // $iconSet .= $passIconContainer . $iconHeader;
-                $iconSet .= $passIconContainer . $iconHeader . '<i class="'. $passIcon .'"></i></li></a>';
+                $iconSet .= $passIconContainer . $iconHeader . '<i class="' . $passIcon . '"></i></li></a>';
                 break;
             case 'fail':
-                $iconSet .= $failIconContainer . $iconHeader . '<i class="'. $failIcon .'"></i></li></a>'; 
+                $iconSet .= $failIconContainer . $iconHeader . '<i class="' . $failIcon . '"></i></li></a>';
                 break;
             case 'tryagain':
-                $iconSet .= $tryAgainIconContainer . $iconHeader . '<i class="'. $tryAgainIcon .'"></i></li></a>';
+                $iconSet .= $tryAgainIconContainer . $iconHeader . '<i class="' . $tryAgainIcon . '"></i></li></a>';
                 break;
             default:
-                $iconSet .= $nullIconContainer . $iconHeader . '<i class="'. $nullIcon .'"></i></li></a>';
+                $iconSet .= $nullIconContainer . $iconHeader . '<i class="' . $nullIcon . '"></i></li></a>';
                 break;
         }
     }
     $iconSet .= '</ul></div>';
 
-    // print('<pre>');
-    // var_dump($iteratedResults);
-    // print('</pre>');
-
-    // print('<pre> $presentationTrainingSubmissions[0][0]["16"] '. $presentationTrainingSubmissions[0][0]['16'] . '</pre>');
-    // print('GFAPI Query for agent ' . $badgeAgentNumber . ': <pre>');
-    // var_dump($presentationTrainingSubmissions);
-    // print('</pre>');
-
-
-
     $outgoingHTML = $iconSet;
-    
+
     return $outgoingHTML;
 }
 
@@ -207,36 +158,11 @@ function display_agent_hierarchy()
     $agentNumber = get_user_meta($userToDisplay, 'agent_number', true);
     $agentPosition = get_user_meta($userToDisplay, 'agent_position', true);
 
-    //if Agency Owner is viewing, query all users with all relevant roles
-    if ($agentPosition == 'Agency Owner') {
-        $downlineQuery = array(
-            'meta_query' => array(
-                'relation' => 'OR',
-                array(
-                    'meta_key' => 'agent_position',
-                    'meta_value' => 'Agent'
-                ),
-                array(
-                    'meta_key' => 'agent_position',
-                    'meta_value' => 'Junior Partner'
-                ),
-                array(
-                    'meta_key' => 'agent_position',
-                    'meta_value' => 'Senior Partner'
-                ),
-                array(
-                    'meta_key' => 'agent_position',
-                    'meta_value' => 'Quality Manager'
-                )
-            )
-        );
-    } else {
-        // Select all users where saNumber = $agentNumber
-        $downlineQuery = array(
-            'meta_key' => 'saNumber',
-            'meta_value' => $agentNumber
-        );
-    }
+    // Select all users where saNumber = $agentNumber
+    $downlineQuery = array(
+        'meta_key' => 'saNumber',
+        'meta_value' => $agentNumber
+    );
 
     // ask for an array of Users, begin empty string
     $findDownline = get_users($downlineQuery);
