@@ -36,7 +36,7 @@ function show_agent_profile_individual($agent_object, $sa_Number)
     $img_a_end_div = '<a href="#"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
-    $badges = '<ul><li><strong>Presentation Training</strong></li><li class="testScores">' . $badge_HTML . '</li> <li><a href="#">' . $first_name . '\'s Pending Business</a></li></ul>' . $downline_HTML;
+    $badges = '<ul><li><strong>Presentation Training</strong></li><a href="https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?agent_id=' . $agent_number . '&mode=view" target="_blank"><li><strong>View Exams</strong></li></a><li class="testScores">' . $badge_HTML . '</li> <li><a href="#">' . $first_name . '\'s Pending Business</a></li></ul>' . $downline_HTML;
     $close_divs = '</div> </div> </div>';
 
     //put the profile block together and return it to display_agent_hierarchy()
