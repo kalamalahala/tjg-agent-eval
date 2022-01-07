@@ -26,6 +26,12 @@ function login_panel_display_admin_buttons ( ) {
         href="https://thejohnson.group/agent-portal/agent/pending-business/" target="_blank" style="margin-bottom:20px;"><span
             class="fusion-button-text">Pending Business Tracker</span></a>
 </div></div>';
+    $persistency_tracker = '<div class="persistency_tracker"><div style="text-align:center;">
+    <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
+        title="Persistency Tracker"
+        href="https://thejohnson.group/agent-portal/quality-portal/persistency-tracker/" target="_blank" style="margin-bottom:20px;"><span
+            class="fusion-button-text">Persistency Tracker</span></a>
+    </div></div>';
     $cal_invites = '<div class="cal_invites"><div style="text-align:center;">
     <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
         title="View your submitted Calendar Invites"
@@ -41,7 +47,7 @@ function login_panel_display_admin_buttons ( ) {
 
     /* Button Combinations */
 
-    $admin_buttons = $divider_div_element . $pending_issue . $pending_business_tracker_manager . $agent_evaluation;
+    $admin_buttons = $divider_div_element . $pending_issue . $pending_business_tracker_manager . $persistency_tracker . $agent_evaluation;
     $agent_buttons = $divider_div_2 . $pending_business_tracker . $cal_invites . $wcn_report;
 
 
