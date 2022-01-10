@@ -263,3 +263,35 @@ function hslToRgb($h, $s, $l){
         // we format to css value and return
         return 'rgb('.$rgb[0].','.$rgb[1].','.$rgb[2].',0.7)'; 
     }
+
+
+    /* Tossing another shortcode in here to display on profile page */
+
+    add_shortcode ('show_agent_persistency_dashboard', 'show_agent_persistency_dashboard');
+
+    function show_agent_persistency_dashboard ( $atts ) {
+        // $atts should include agent_number
+
+        // check for agent_id parameter, show those stats, otherwise show logged in user
+
+        if (!isset($_GET['agent_id'])) {
+            $currentUser = get_current_user_id();
+            $dashboardAgentNumber = get_user_meta($currentUser, 'agent_number', true);
+            $agent_is_persistency = get_user_meta($currentUser, 'is_persistency', true);
+        } else {
+            $userQuery = array(
+                'meta_key' => 'agent_number',
+                'meta_value' => $atts
+            );
+            $currentUser = get_users($userQuery);
+            // todo fix atts, assign agent_is_persistency
+            // check agent_is_persistency true/false/null
+            // display middle section of stats from earlier function
+        }
+
+    //     $atts = shortcode_atts( array(
+    //         'agent_number' => 
+    //     ))
+    // }
+    }
+    ?>
