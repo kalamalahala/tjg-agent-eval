@@ -35,6 +35,12 @@ function dashboard__header ( $atts ) {
             $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
             $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
             break;
+        
+        case 'calendar':
+            $page__title = '<div class="pageTitle">Calendar Invites</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
+            break;
 
         default:
         $page__title = '<div class="pageTitle">Leadership Dashboard</div>';
