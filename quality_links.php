@@ -35,7 +35,7 @@ function login_panel_display_admin_buttons ( ) {
     $cal_invites = '<div class="cal_invites"><div style="text-align:center;">
     <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
         title="View your submitted Calendar Invites"
-        href="#" target="_self" style="margin-bottom:20px;"><span
+        href="https://thejohnson.group/agent-portal/agent/reports/calendar-invites/" target="_self" style="margin-bottom:20px;"><span
             class="fusion-button-text">View your Calendar Invites</span></a>
 </div></div>';
     $wcn_report = '<div class="wcn_report"><div style="text-align:center;">
