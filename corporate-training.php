@@ -124,8 +124,10 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
 
     switch ( $phaseTwoQuery[0][32] ) {
         case 'pass':
+            $phaseTwoScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
             break;
         case 'tryagain':
+            $phaseTwoScore = '<div class="tryAgainIcon"><i class="fa fa-exclamation-triangle"></i></div>';
             break;
         default:
             $phaseTwoScore = '<div class="tinyfont">No Data</div>';
@@ -133,8 +135,10 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
 
     switch ( $phaseThreeQuery[0][43] ) {
         case 'pass':
+            $phaseThreeScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
             break;
         case 'tryagain':
+            $phaseThreeScore = '<div class="tryAgainIcon"><i class="fa fa-exclamation-triangle"></i></div>';
             break;
         default:
             $phaseThreeScore = '<div class="tinyfont">No Data</div>';
@@ -145,9 +149,9 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
     $htmlContainerTop = '<div class="training__block"><div class="training__container"><div class="training__stats">';
 
     $phase_stats = '<ul>
-        <li style="" class="phase__one__stats"><div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one" target="_self" title="Create New Exam"><div class="percentage">'.$phaseOneScore.'</div></a></li>
-        <li style="" class="phase__two_stats"><div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two" target="_self" title="Create New Exam"><div class="percentage">'.$phaseTwoScore.'</div></a></li>
-        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a></li>
+        <li style="" class="phase__one__stats"><div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseOneScore.'</div></a></li>
+        <li style="" class="phase__two_stats"><div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseTwoScore.'</div></a></li>
+        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a></li>
         </ul>';
 
     $update_button = '<div style="text-align:center;">
