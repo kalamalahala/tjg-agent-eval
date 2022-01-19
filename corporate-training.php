@@ -70,9 +70,9 @@ function create_new_agent_profile_basic ( $agent ) {
     $assembled_HTML = '';
 
     $vars = array(
-        'phase_1_id' => '',
-        'phase_2_id' => '',
-        'phase_3_id' => ''
+        'phase_1_id' => '71',
+        'phase_2_id' => '73',
+        'phase_3_id' => '74'
     );
 
     //check for profile pic, use Logo as default if no profile
@@ -105,18 +105,49 @@ function create_new_agent_profile_basic ( $agent ) {
 function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
     // query the 3 form ids for latest result, return the 3 blocks back
 
-    $phaseOneQuery = fetch_phase_stats ( $agent_number, $id1 );
-    $phaseTwoQuery = fetch_phase_stats ( $agent_number, $id2 );
-    $phaseThreeQuery = fetch_phase_stats ( $agent_number, $id3 );
+    $phaseOneQuery = fetch_phase_stats ( $agent_number, $id1, '16' );
+    $phaseTwoQuery = fetch_phase_stats ( $agent_number, $id2, '1' );
+    $phaseThreeQuery = fetch_phase_stats ( $agent_number, $id3, '1' );
+
+    // long form logic to display icons and such
+
+    switch ( $phaseOneQuery[0][30] ) {
+        case 'pass':
+            $phaseOneScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
+            break;
+        case 'tryagain':
+            $phaseOneScore = '<div class="tryAgainIcon"><i class="fa fa-exclamation-triangle"></i></div>';
+            break;
+        default:
+            $phaseOneScore = '<div class="tinyfont">No Data</div>';
+    }
+
+    switch ( $phaseTwoQuery[0][32] ) {
+        case 'pass':
+            break;
+        case 'tryagain':
+            break;
+        default:
+            $phaseTwoScore = '<div class="tinyfont">No Data</div>';
+    }
+
+    switch ( $phaseThreeQuery[0][43] ) {
+        case 'pass':
+            break;
+        case 'tryagain':
+            break;
+        default:
+            $phaseThreeScore = '<div class="tinyfont">No Data</div>';
+    }
 
     $htmlBlock = '';
 
     $htmlContainerTop = '<div class="training__block"><div class="training__container"><div class="training__stats">';
 
     $phase_stats = '<ul>
-        <li style="" class="phase__one__stats"><div class="phase__header">Phase One</div><div class="percentage">69% (add ternary for no data)</div></li>
-        <li style="" class="phase__two_stats"><div class="phase__header">Phase Two</div><div class="percentage">70%</div></li>
-        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><div class="percentage">71%</div></li>
+        <li style="" class="phase__one__stats"><div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one" target="_self" title="Create New Exam"><div class="percentage">'.$phaseOneScore.'</div></a></li>
+        <li style="" class="phase__two_stats"><div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two" target="_self" title="Create New Exam"><div class="percentage">'.$phaseTwoScore.'</div></a></li>
+        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a></li>
         </ul>';
 
     $update_button = '<div style="text-align:center;">
@@ -127,19 +158,24 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
 </div>';
     $htmlContainerBottom = '</div>';
 
-    return $htmlContainerTop . $phase_stats . $update_button . $htmlContainerBottom;
+    $htmlBlock = $htmlContainerTop . $phase_stats . $update_button . $htmlContainerBottom;
 
+    // if ( !empty($phaseOneQuery) ) {
+    //     print ('<pre style="magin-bottom:60px;">');
+    //     var_dump($phaseOneQuery);
+    //     print('</pre>');
+    // }
 
     return $htmlBlock;
 }
 
-function fetch_phase_stats ( $agentNumber, $form_id ) {
+function fetch_phase_stats ( $agentNumber, $form_id, $field_id ) {
 
     // build API Query for form results
     $GFAPI_query = array(
         'field_filters' => array(
             'mode' => 'all',
-            array( 'key' => '', 'value' => $agentNumber )
+            array( 'key' => $field_id, 'value' => $agentNumber )
         )
     );
 
