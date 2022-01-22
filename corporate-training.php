@@ -87,7 +87,7 @@ function create_new_agent_profile_basic ( $agent ) {
 
     //HTML sections with css from Avada
     $opening_div = '<div class="person__container__wrapper"><div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
-    $img_a_end_div = '<a href="#"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
+    $img_a_end_div = '<img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
 
@@ -149,15 +149,15 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
     $htmlContainerTop = '<div class="training__block"><div class="training__container"><div class="training__stats">';
 
     $phase_stats = '<ul>
-        <li style="" class="phase__one__stats"><div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseOneScore.'</div></a></li>
-        <li style="" class="phase__two_stats"><div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseTwoScore.'</div></a></li>
-        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a></li>
+        <li style="" class="phase__one__stats"> <div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseOneScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_one" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
+        <li style="" class="phase__two_stats">  <div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseTwoScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_two" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
+        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_three" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
         </ul>';
 
     $update_button = '<div style="text-align:center;">
         <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
-            title="Create New Exam for '. $first_name .'" href="#"
-            target="_self"><span class="fusion-button-text">Create Exam</span></a>
+            title="Create New Exam for '. $first_name .'" href="https://thejohnson.group/agent-portal/corporate-training/uploads/?agent_id='. $agent_number .'"
+            target="_self"><span class="fusion-button-text">View Recording Submissions</span></a>
     </div>
 </div>';
     $htmlContainerBottom = '</div>';
