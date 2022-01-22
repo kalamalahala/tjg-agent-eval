@@ -3,10 +3,16 @@
 // this is the shortcode that displays buttons and separators based on role and attribute passed
 add_shortcode( 'get_quick_links', 'login_panel_display_admin_buttons' );
 
-function login_panel_display_admin_buttons ( ) {
+function login_panel_display_admin_buttons ( $atts ) {
+
+    $atts = shortcode_atts( array( 
+        'mode' => ''
+    ), $atts, 'get_quick_links');
 
     $current_user = get_current_user_id( );
     $agent_position = get_user_meta( $current_user, 'agent_position', true );
+    $is_new_agent = get_user_meta( $current_user, 'is_new_agent', true );
+    $agent_number = get_user_meta( $current_user, 'agent_number', true );
     $admin_positions = array('Agency Owner', 'Quality Manager', 'Administrator');
 
     //html copied from avada element
@@ -47,18 +53,28 @@ function login_panel_display_admin_buttons ( ) {
             class="fusion-button-text">View Your WCN Form Submissions</span></a>
 </div></div>';
 
+    $new_agent_portal = '<div class="new_agent_portal"><div style="text-align:center;">
+    <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
+        title="Go to New Agent Portal"
+        href="https://thejohnson.group/agent-portal/new-agent/?agent_id='. $agent_number .'" target="_self" style="margin-bottom:20px;"><span
+            class="fusion-button-text">New Agent Portal</span></a>
+</div></div>';
+
     /* Button Combinations */
 
     $admin_buttons = $divider_div_element . $pending_issue . $pending_business_tracker_manager . $persistency_tracker . $agent_evaluation . $corporate_training_dashboard;
-    $agent_buttons = $divider_div_2 . $pending_business_tracker . $cal_invites . $wcn_report;
+    $agent_buttons = $divider_div_2 . (($is_new_agent == 'true') ? $new_agent_portal : '' ) . $pending_business_tracker . $cal_invites . $wcn_report;
 
-
-    if ( in_array( $agent_position, $admin_positions, false ) ) {
-        return $div_flex_box_opener . $admin_buttons . $agent_buttons . $div_flex_box_closer;
-    } else if ( $agent_position == 'Agent' ) {
-        return $div_flex_box_opener . $agent_buttons . $div_flex_box_closer;
-    } else {
-        return null;
+    if ( empty($atts['mode']) ) {   
+        if ( in_array( $agent_position, $admin_positions, false ) ) {
+            return $div_flex_box_opener . $admin_buttons . $agent_buttons . $div_flex_box_closer;
+        } else if ( $agent_position == 'Agent' ) {
+            return $div_flex_box_opener . $agent_buttons . $div_flex_box_closer;
+        } else {
+            return null;
+        }
+    } elseif ( $atts['mode'] == 'newagent' ) {
+        return $div_flex_box_opener . $divider_div_2 . $new_agent_portal . $div_flex_box_closer;
     }
 
 }
