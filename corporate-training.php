@@ -69,6 +69,14 @@ function create_new_agent_profile_basic ( $agent ) {
     $agent_name = $first_name . ' ' . $last_name;
     $assembled_HTML = '';
 
+
+    // How do we want to filter who can see the "New Agent Portal"? I think everyone should be able to see it but unsure, run it by CJ
+    // // Leadership Positions for viewing New Agent Portal button
+    // $leadership = ['Junior Partner, Senior Partner, Corporate Trainer, Agency Owner, ']
+
+    //base case and admin skip
+    if ( is_null($agent_number) || $agent_number == '42215' ) { return false; }
+
     $vars = array(
         'phase_1_id' => '71',
         'phase_2_id' => '73',
@@ -154,15 +162,28 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
         <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_three" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
         </ul>';
 
-    $update_button = '<div style="text-align:center;">
+    $recording_submission_button = '<div style="text-align:center;">
         <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
-            title="Create New Exam for '. $first_name .'" href="https://thejohnson.group/agent-portal/corporate-training/uploads/?agent_id='. $agent_number .'"
+            title="'. $first_name .'\'s recording submissions" href="https://thejohnson.group/agent-portal/corporate-training/uploads/?agent_id='. $agent_number .'"
             target="_self"><span class="fusion-button-text">View Recording Submissions</span></a>
     </div>
 </div>';
+
+        // this button was intended to link to the presentation training dashboard, AJ's view. no need to render in each block, 
+        // go create one manually in avada, change functionality of presentation dashboard rendering
+        // to render all users with new agent flag
+
+    // $presentation_training_dashboard = '<div style="text-align:center;">
+    // <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
+    //     title="'. $first_name .'\'s recording submissions" href="https://thejohnson.group/agent-portal/corporate-training/uploads/?agent_id='. $agent_number .'"
+    //     target="_self"><span class="fusion-button-text">View Recording Submissions</span></a>
+    // </div>
+    // </div>';
+
+
     $htmlContainerBottom = '</div>';
 
-    $htmlBlock = $htmlContainerTop . $phase_stats . $update_button . $htmlContainerBottom;
+    $htmlBlock = $htmlContainerTop . $phase_stats . $recording_submission_button . $htmlContainerBottom;
 
     // if ( !empty($phaseOneQuery) ) {
     //     print ('<pre style="magin-bottom:60px;">');

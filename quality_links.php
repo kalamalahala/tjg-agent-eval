@@ -64,7 +64,7 @@ function login_panel_display_admin_buttons ( $atts ) {
 
     $admin_buttons = $divider_div_element . $pending_issue . $pending_business_tracker_manager . $persistency_tracker . $agent_evaluation . $corporate_training_dashboard;
     $agent_buttons = $divider_div_2 . (($is_new_agent == 'true') ? $new_agent_portal : '' ) . $pending_business_tracker . $cal_invites . $wcn_report;
-    $corporate_trainer_buttons = $divider_div_2 . $agent_evaluation . $corporate_training_dashboard;
+    $corporate_trainer_buttons = $divider_div_2 . $agent_evaluation . $corporate_training_dashboard . $new_agent_portal;
     
     if ( empty($atts['mode']) ) {   
         if ( in_array( $agent_position, $admin_positions, false ) ) {
@@ -72,7 +72,7 @@ function login_panel_display_admin_buttons ( $atts ) {
         } else if ( $agent_position == 'Agent' ) {
             return $div_flex_box_opener . $agent_buttons . $div_flex_box_closer;
         } else if ( $agent_position == 'Corporate Trainer' ) {
-            return $div_flex_box_closer . $corporate_trainer_buttons . $div_flex_box_closer;
+            return $div_flex_box_opener . $corporate_trainer_buttons . $div_flex_box_closer;
         } else {
             return null;
         }

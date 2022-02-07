@@ -4,7 +4,7 @@
     other functions to be called
 */
 
-function show_agent_profile_individual($agent_object, $sa_Number)
+function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPosition)
 {
     //grab ID and email from argument object, grab the rest from meta tags, assemble First and Last name
     $user_id = $agent_object->ID;
@@ -15,6 +15,8 @@ function show_agent_profile_individual($agent_object, $sa_Number)
     $phone_number = get_user_meta($user_id, 'phone_number', true);
     $agent_position = get_user_meta($user_id, 'agent_position', true);
     $agent_name = $first_name . ' ' . $last_name;
+
+    if ( $agent_number == '42215' && $viewerAgentPosition == 'Corporate Trainer' ) { return false; }
 
     //check for profile pic, use Logo as default if no profile
     $default_pic = "https://thejohnson.group/wp-content/uploads/default.png";
@@ -172,8 +174,12 @@ function create_presentation_badges($arg, $sa__Number)
     Begin Shortcode
 */
 
-function display_agent_hierarchy()
+function display_agent_hierarchy($atts)
 {
+    $vars = shortcode_atts(array(
+        'mode' => ''
+    ), $atts, 'display_agent_hierarchy' );
+
 
     // Check for agent_id parameter, get user's ID from WP User object. If not provided, use the currently logged in user.
     if (!isset($_GET['agent_id'])) {
@@ -193,11 +199,23 @@ function display_agent_hierarchy()
     $agentNumber = get_user_meta($userToDisplay, 'agent_number', true);
     $agentPosition = get_user_meta($userToDisplay, 'agent_position', true);
 
-    // Select all users where saNumber = $agentNumber
-    $downlineQuery = array(
-        'meta_key' => 'saNumber',
-        'meta_value' => $agentNumber
-    );
+    // Check mode parameter and change functionality
+    switch ( $agentPosition ) {
+        case 'Corporate Trainer':
+            $downlineQuery = array(
+                'meta_key' => 'is_new_agent',
+                'meta_value' => 'true'
+            );
+            break;
+        default:
+            // Select all users where saNumber = $agentNumber
+            $downlineQuery = array(
+                'meta_key' => 'saNumber',
+                'meta_value' => $agentNumber
+            );
+            break;
+    }
+
 
     // ask for an array of Users, begin empty string
     $findDownline = get_users($downlineQuery);
@@ -205,7 +223,7 @@ function display_agent_hierarchy()
 
     // run the profile builder for each User in the array
     foreach ($findDownline as $agent) {
-        $hierarchyHTML .= show_agent_profile_individual($agent, $agentNumber);
+        $hierarchyHTML .= show_agent_profile_individual($agent, $agentNumber, $agentPosition);
     }
 
     // Display all returned HTML
