@@ -13,7 +13,7 @@ function login_panel_display_admin_buttons ( $atts ) {
     $agent_position = get_user_meta( $current_user, 'agent_position', true );
     $is_new_agent = get_user_meta( $current_user, 'is_new_agent', true );
     $agent_number = get_user_meta( $current_user, 'agent_number', true );
-    $admin_positions = array('Agency Owner', 'Quality Manager', 'Administrator');
+    $admin_positions = array('Agency Owner', 'Quality Manager', 'Administrator', 'Senior Partner', 'Junior Partner');
 
     //html copied from avada element
 
@@ -64,12 +64,15 @@ function login_panel_display_admin_buttons ( $atts ) {
 
     $admin_buttons = $divider_div_element . $pending_issue . $pending_business_tracker_manager . $persistency_tracker . $agent_evaluation . $corporate_training_dashboard;
     $agent_buttons = $divider_div_2 . (($is_new_agent == 'true') ? $new_agent_portal : '' ) . $pending_business_tracker . $cal_invites . $wcn_report;
-
+    $corporate_trainer_buttons = $divider_div_2 . $agent_evaluation . $corporate_training_dashboard;
+    
     if ( empty($atts['mode']) ) {   
         if ( in_array( $agent_position, $admin_positions, false ) ) {
             return $div_flex_box_opener . $admin_buttons . $agent_buttons . $div_flex_box_closer;
         } else if ( $agent_position == 'Agent' ) {
             return $div_flex_box_opener . $agent_buttons . $div_flex_box_closer;
+        } else if ( $agent_position == 'Corporate Trainer' ) {
+            return $div_flex_box_closer . $corporate_trainer_buttons . $div_flex_box_closer;
         } else {
             return null;
         }
