@@ -5,12 +5,13 @@
 * harvest other stuff
 */
 
-add_shortcode( 'display_new_agents_in_training', 'display_new_agents_in_training' );
-function display_new_agents_in_training ( $atts ) {
+add_shortcode('display_new_agents_in_training', 'display_new_agents_in_training');
+function display_new_agents_in_training($atts)
+{
 
     $vars = shortcode_atts(array(
         'mode' => ''
-    ), $atts, 'display_new_agents_in_training' );
+    ), $atts, 'display_new_agents_in_training');
 
     // $atts is probably display mode, also form ids
     // Display list of agents in user table that have is_new_agent flag as true
@@ -24,7 +25,7 @@ function display_new_agents_in_training ( $atts ) {
     // todo: create forms (3 forms?)
 
 
-    $new_agent_query = array( 
+    $new_agent_query = array(
         'meta_key' => 'is_new_agent',
         'meta_value' => 'true'
     );
@@ -44,7 +45,6 @@ function display_new_agents_in_training ( $atts ) {
 
     // return all returned HTML
     return $layoutHTML;
-
 }
 
 
@@ -56,7 +56,8 @@ function display_new_agents_in_training ( $atts ) {
  * @param object agent object passed in from primary function
  * @return string html divs to send back
  */
-function create_new_agent_profile_basic ( $agent ) {
+function create_new_agent_profile_basic($agent)
+{
 
     //grab ID and other meta tags
     $agent_userID = $agent->ID;
@@ -75,7 +76,9 @@ function create_new_agent_profile_basic ( $agent ) {
     // $leadership = ['Junior Partner, Senior Partner, Corporate Trainer, Agency Owner, ']
 
     //base case and admin skip
-    if ( is_null($agent_number) || $agent_number == '42215' ) { return false; }
+    if (is_null($agent_number) || $agent_number == '42215') {
+        return false;
+    }
 
     $vars = array(
         'phase_1_id' => '71',
@@ -99,8 +102,8 @@ function create_new_agent_profile_basic ( $agent ) {
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
 
-    $phases_results_block = phase_results_block( $agent_number, $first_name, $vars['phase_1_id'], $vars['phase_2_id'], $vars['phase_3_id'] );
-    
+    $phases_results_block = phase_results_block($agent_number, $first_name, $vars['phase_1_id'], $vars['phase_2_id'], $vars['phase_3_id']);
+
     $close_divs = '</div> </div> </div> </div> </div>';
 
     //put the profile block together and return it to display_persistency_users()
@@ -110,16 +113,17 @@ function create_new_agent_profile_basic ( $agent ) {
 
 }
 
-function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
+function phase_results_block($agent_number, $first_name, $id1, $id2, $id3)
+{
     // query the 3 form ids for latest result, return the 3 blocks back
 
-    $phaseOneQuery = fetch_phase_stats ( $agent_number, $id1, '16' );
-    $phaseTwoQuery = fetch_phase_stats ( $agent_number, $id2, '1' );
-    $phaseThreeQuery = fetch_phase_stats ( $agent_number, $id3, '1' );
+    $phaseOneQuery = fetch_phase_stats($agent_number, $id1, '16');
+    $phaseTwoQuery = fetch_phase_stats($agent_number, $id2, '1');
+    $phaseThreeQuery = fetch_phase_stats($agent_number, $id3, '1');
 
     // long form logic to display icons and such
 
-    switch ( $phaseOneQuery[0][30] ) {
+    switch ($phaseOneQuery[0][30]) {
         case 'pass':
             $phaseOneScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
             break;
@@ -130,7 +134,7 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
             $phaseOneScore = '<div class="tinyfont">No Data</div>';
     }
 
-    switch ( $phaseTwoQuery[0][32] ) {
+    switch ($phaseTwoQuery[0][32]) {
         case 'pass':
             $phaseTwoScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
             break;
@@ -141,7 +145,7 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
             $phaseTwoScore = '<div class="tinyfont">No Data</div>';
     }
 
-    switch ( $phaseThreeQuery[0][43] ) {
+    switch ($phaseThreeQuery[0][43]) {
         case 'pass':
             $phaseThreeScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
             break;
@@ -157,21 +161,28 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
     $htmlContainerTop = '<div class="training__block"><div class="training__container"><div class="training__stats">';
 
     $phase_stats = '<ul>
-        <li style="" class="phase__one__stats"> <div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseOneScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_one" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
-        <li style="" class="phase__two_stats">  <div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseTwoScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_two" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
-        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='. $agent_number .'" target="_self" title="Create New Exam"><div class="percentage">'.$phaseThreeScore.'</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id='.$agent_number.'&mode=phase_three" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id='.$agent_number.'" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
+        <li style="" class="phase__one__stats"> <div class="phase__header">Phase One</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id=' . $agent_number . '" target="_self" title="Create New Exam"><div class="percentage">' . $phaseOneScore . '</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_one" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=one&agent_id=' . $agent_number . '" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
+        <li style="" class="phase__two_stats">  <div class="phase__header">Phase Two</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id=' . $agent_number . '" target="_self" title="Create New Exam"><div class="percentage">' . $phaseTwoScore . '</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_two" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=two&agent_id=' . $agent_number . '" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
+        <li style="" class="phase__three_stats"><div class="phase__header">Phase Three</div><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id=' . $agent_number . '" target="_self" title="Create New Exam"><div class="percentage">' . $phaseThreeScore . '</div></a><a href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_three" title="View" target="_self"><button class="fusion-button button-small button-default button-override button-2">View</button></a><a href="https://thejohnson.group/agent-portal/corporate-training/exam/?phase=three&agent_id=' . $agent_number . '" title="Create" target="_self"><button class="fusion-button button-small button-default button-2 button-override">Create</button></a></li>
         </ul>';
 
     $recording_submission_button = '<div style="text-align:center;">
         <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
-            title="'. $first_name .'\'s recording submissions" href="https://thejohnson.group/agent-portal/corporate-training/uploads/?agent_id='. $agent_number .'"
+            title="' . $first_name . '\'s recording submissions" href="https://thejohnson.group/agent-portal/corporate-training/uploads/?agent_id=' . $agent_number . '"
             target="_self"><span class="fusion-button-text">View Recording Submissions</span></a>
-    </div>
-</div>';
+    </div>';
 
-        // this button was intended to link to the presentation training dashboard, AJ's view. no need to render in each block, 
-        // go create one manually in avada, change functionality of presentation dashboard rendering
-        // to render all users with new agent flag
+    // check commit lol, moved div tag (line 181) because I couldn't figure out why it wasn't working
+
+    $view_presentation_inspections = '<div style="text-align:center; margin-top: 10px;">
+    <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
+        title="' . $first_name . '\'s Presentation Inspection Results" href="https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?agent_id=' . $agent_number . '&mode=view"
+        target="_self"><span class="fusion-button-text">View Presentation Performance</span></a>
+</div></div>';
+
+    // this button was intended to link to the presentation training dashboard, AJ's view. no need to render in each block, 
+    // go create one manually in avada, change functionality of presentation dashboard rendering
+    // to render all users with new agent flag
 
     // $presentation_training_dashboard = '<div style="text-align:center;">
     // <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
@@ -183,7 +194,7 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
 
     $htmlContainerBottom = '</div>';
 
-    $htmlBlock = $htmlContainerTop . $phase_stats . $recording_submission_button . $htmlContainerBottom;
+    $htmlBlock = $htmlContainerTop . $phase_stats . $recording_submission_button . $view_presentation_inspections . $htmlContainerBottom;
 
     // if ( !empty($phaseOneQuery) ) {
     //     print ('<pre style="magin-bottom:60px;">');
@@ -194,20 +205,18 @@ function phase_results_block ( $agent_number, $first_name, $id1, $id2, $id3 ) {
     return $htmlBlock;
 }
 
-function fetch_phase_stats ( $agentNumber, $form_id, $field_id ) {
+function fetch_phase_stats($agentNumber, $form_id, $field_id)
+{
 
     // build API Query for form results
     $GFAPI_query = array(
         'field_filters' => array(
             'mode' => 'all',
-            array( 'key' => $field_id, 'value' => $agentNumber )
+            array('key' => $field_id, 'value' => $agentNumber)
         )
     );
 
-    $entries = GFAPI::get_entries( $form_id, $GFAPI_query );
+    $entries = GFAPI::get_entries($form_id, $GFAPI_query);
 
     return $entries;
-
 }
-
-?>
