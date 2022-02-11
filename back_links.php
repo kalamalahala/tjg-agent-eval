@@ -16,7 +16,7 @@ function gv_change_back_link_gviews( $href = '', $context = null ) {
     $url = $base_url . $_SERVER["REQUEST_URI"];
     $parameters = '?' . parse_url($url, PHP_URL_QUERY);
 
-    $page_ids = array ( '7350' );
+    $page_ids = array ( '7350', '10234', '10939', '10941', '10943');
 
 	if( in_array($context->view->ID, $page_ids) ) {
 		return $href . $parameters;
