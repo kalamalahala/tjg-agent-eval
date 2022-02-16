@@ -10,7 +10,7 @@ function display_new_agents_in_training($atts)
 {
 
     $vars = shortcode_atts(array(
-        'mode' => ''
+        'agency_name' => ''
     ), $atts, 'display_new_agents_in_training');
 
     // $atts is probably display mode, also form ids
@@ -24,11 +24,44 @@ function display_new_agents_in_training($atts)
     //          * create new exam phase 1/2/3
     // todo: create forms (3 forms?)
 
-
-    $new_agent_query = array(
-        'meta_key' => 'is_new_agent',
-        'meta_value' => 'true'
-    );
+    if (!empty($vars['agency_name'])) {
+        $new_agent_query = array(
+            'meta_query' => array(
+                'relation' => 'AND',
+                array(
+                    'key' => 'is_new_agent',
+                    'value' => 'true',
+                    'compare' => '='
+                ),
+                array(
+                    'key' => 'agency_name',
+                    'value' => $vars['agency_name'],
+                    'compare' => '='
+                ),
+                array(
+                    'key' => 'is_dashboard_visible',
+                    'value' => 'false',
+                    'compare' => '!='
+                )
+            )
+        );
+    } else {
+        $new_agent_query = array(
+            'meta_query' => array(
+                'relation' => 'AND',
+                array(
+                    'key' => 'is_new_agent',
+                    'value' => 'true',
+                    'compare' => '='
+                ),
+                array(
+                    'key' => 'is_dashboard_visible',
+                    'value' => 'hidden',
+                    'compare' => '!='
+                )
+            )
+        );
+    }
 
     $new_agents = get_users($new_agent_query);
     $layoutHTML = '';
@@ -190,7 +223,7 @@ function phase_results_block($agent_number, $first_name, $phase_form_ids)
         default:
             $phaseFourScore = '<div class="tinyfont">No Data</div>';
     }
-    
+
     switch ($phaseFiveQuery[0][43]) {
         case 'pass':
             $phaseFiveScore = '<div class="passIcon"><i class="fa fa-check-square"></i></div>';
