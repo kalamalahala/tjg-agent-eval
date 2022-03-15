@@ -4,7 +4,7 @@
     other functions to be called
 */
 
-function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPosition)
+function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPosition, $mode)
 {
     //grab ID and email from argument object, grab the rest from meta tags, assemble First and Last name
     $user_id = $agent_object->ID;
@@ -16,7 +16,9 @@ function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPo
     $agent_position = get_user_meta($user_id, 'agent_position', true);
     $agent_name = $first_name . ' ' . $last_name;
 
-    if ( $agent_number == '42215' && $viewerAgentPosition == 'Corporate Trainer' ) { return false; }
+    if ($agent_number == '42215' && $viewerAgentPosition == 'Corporate Trainer') {
+        return false;
+    }
 
     //check for profile pic, use Logo as default if no profile
     $default_pic = "https://thejohnson.group/wp-content/uploads/default.png";
@@ -38,11 +40,24 @@ function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPo
     $img_a_end_div = '<a href="#"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
-    $badges = '<ul><li><strong>Presentation Training</strong></li><a href="https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?agent_id=' . $agent_number . '&mode=view" target="_blank"><li><strong>View Exams</strong></li></a><li class="testScores">' . $badge_HTML . '</li> <li><a href="#">' . $first_name . '\'s Pending Business</a></li></ul>' . $downline_HTML;
+    $badges = '<ul><li><strong>Field Training</strong></li><a href="https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?agent_id=' . $agent_number . '&mode=view" target="_blank"><li><strong>View Exams</strong></li></a><li class="testScores">' . $badge_HTML . '</li>';
+    $corporate_training_buttons = '<li><div class="corporateHeader">Classroom Training</div><div class="corporateFlexbox" style="text-align:center; margin-top: 10px;">
+    <a class="fusion-button button-3d button-small button-default button-2" title="' . $first_name . '\'s Corporate Training Phase One Results" href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_one" target="_blank"><span class="fusion-button-text">Mon</span></a>
+    <a class="fusion-button button-3d button-small button-default button-2" title="' . $first_name . '\'s Corporate Training Phase Two Results" href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_two" target="_blank"><span class="fusion-button-text">Tue</span></a>
+    <a class="fusion-button button-3d button-small button-default button-2" title="' . $first_name . '\'s Corporate Training Phase Three Results" href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_three" target="_blank"><span class="fusion-button-text">Wed</span></a>
+    <a class="fusion-button button-3d button-small button-default button-2" title="' . $first_name . '\'s Corporate Training Phase Four Results" href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_four" target="_blank"><span class="fusion-button-text">Thu</span></a>
+    <a class="fusion-button button-3d button-small button-default button-2" title="' . $first_name . '\'s Corporate Training Phase Five Results" href="https://thejohnson.group/agent-portal/corporate-training/completed/?agent_id=' . $agent_number . '&mode=phase_five" target="_blank"><span class="fusion-button-text">Fri</span></a>
+    </div></li>';
+    $pending_business_and_downline = '<li><a href="#">' . $first_name . '\'s Pending Business</a></li></ul>' . $downline_HTML;
     $close_divs = '</div> </div> </div>';
 
     //put the profile block together and return it to display_agent_hierarchy()
-    $assembled_HTML = $opening_div . $img_a_end_div . $name_and_agent_number . $text_block . $badges .  $close_divs;
+
+    if ($mode == 'single') {
+        $assembled_HTML = $opening_div . $badges . $close_divs;
+    } else {
+        $assembled_HTML = $opening_div . $img_a_end_div . $name_and_agent_number . $text_block . $badges . $corporate_training_buttons .  $pending_business_and_downline .  $close_divs;
+    }
 
     return $assembled_HTML; // sends back the assembled block of information for the agent, Profile picture, and presentation training status
 }
@@ -178,7 +193,7 @@ function display_agent_hierarchy($atts)
 {
     $vars = shortcode_atts(array(
         'mode' => ''
-    ), $atts, 'display_agent_hierarchy' );
+    ), $atts, 'display_agent_hierarchy');
 
 
     // Check for agent_id parameter, get user's ID from WP User object. If not provided, use the currently logged in user.
@@ -200,7 +215,7 @@ function display_agent_hierarchy($atts)
     $agentPosition = get_user_meta($userToDisplay, 'agent_position', true);
 
     // Check mode parameter and change functionality
-    switch ( $agentPosition ) {
+    switch ($agentPosition) {
         case 'Corporate Trainer':
             $downlineQuery = array(
                 'meta_key' => 'is_new_agent',
@@ -216,6 +231,13 @@ function display_agent_hierarchy($atts)
             break;
     }
 
+    if ($vars['mode'] == 'single') {
+        $downlineQuery = array(
+            'meta_key' => 'agent_number',
+            'meta_value' => $agentNumber
+        );
+    }
+
 
     // ask for an array of Users, begin empty string
     $findDownline = get_users($downlineQuery);
@@ -223,7 +245,7 @@ function display_agent_hierarchy($atts)
 
     // run the profile builder for each User in the array
     foreach ($findDownline as $agent) {
-        $hierarchyHTML .= show_agent_profile_individual($agent, $agentNumber, $agentPosition);
+        $hierarchyHTML .= show_agent_profile_individual($agent, $agentNumber, $agentPosition, $vars['mode']);
     }
 
     // Display all returned HTML
@@ -231,3 +253,4 @@ function display_agent_hierarchy($atts)
 }
 
 add_shortcode('display_agent_hierarchy', 'display_agent_hierarchy');
+// add_shortcode('display_single_agent', 'show_agent_profile_individual');

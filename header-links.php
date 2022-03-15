@@ -1,10 +1,11 @@
 <?
 
-add_shortcode ( 'dashboard_header', 'dashboard__header' );
+add_shortcode('dashboard_header', 'dashboard__header');
 
-function dashboard__header ( $atts ) {
+function dashboard__header($atts)
+{
 
-    $headerProperties = shortcode_atts( array('mode' => ''), $atts, 'dashboard_header' );
+    $headerProperties = shortcode_atts(array('mode' => ''), $atts, 'dashboard_header');
 
     // Check for agent_id parameter, get user's ID from WP User object. If not provided, use the currently logged in user.
     if (!isset($_GET['agent_id'])) {
@@ -29,15 +30,21 @@ function dashboard__header ( $atts ) {
 
     // begin HTML layouts
 
-    switch ( $headerProperties['mode'] ) {
+    switch ($headerProperties['mode']) {
         case 'single':
             $page__title = '<div class="pageTitle">Presentation Training</div>';
             $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
             $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
             break;
-        
-        case 'calendar' || 'wcn':
-            $page__title = '<div class="pageTitle">Calendar Invites</div>';
+
+        case 'single-new':
+            $page__title = '<div class="pageTitle">Your Assignments</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
+            break;
+
+        case 'hw-submit':
+            $page__title = '<div class="pageTitle">Assignment Submission</div>';
             $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
             $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
             break;
@@ -47,17 +54,33 @@ function dashboard__header ( $atts ) {
             $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
             $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
             break;
-    
+
+        case 'calendar':
+            $page__title = '<div class="pageTitle">Calendar Invites</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
+            break;
+
+        case 'wcn':
+            $page__title = '<div class="pageTitle">Calendar Invites</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
+            break;
+
+        case 'update_account':
+            $page__title = '<div class="pageTitle">Update Account Information</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
+            break;
 
         default:
-        $page__title = '<div class="pageTitle">Leadership Dashboard</div>';
-        $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
-        $page__subtitle = '<div class="pageSubtitle">Viewing ' . $dashboard__user['first_name'] . '\'s Team</div>';
-        $name__title__etc = $dashboard__name__and__title . $page__subtitle;
-        $description__box = '<div class="descriptionBox">' . $name__title__etc . '</div>';
+            $page__title = '<div class="pageTitle">Leadership Dashboard</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $page__subtitle = '<div class="pageSubtitle">Viewing ' . $dashboard__user['first_name'] . '\'s Team</div>';
+            $name__title__etc = $dashboard__name__and__title . $page__subtitle;
+            $description__box = '<div class="descriptionBox">' . $name__title__etc . '</div>';
             break;
     }
 
     return $page__title . $description__box;
-
 }

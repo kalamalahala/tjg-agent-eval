@@ -143,7 +143,7 @@ function create_new_agent_profile_basic($agent)
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
 
-    $phases_results_block = phase_results_block($agent_number, $first_name, $phase_form_ids);
+    $phases_results_block = phase_results_block($agent_userID, $agent_number, $first_name, $phase_form_ids);
 
     $close_divs = '</div> </div> </div> </div> </div>';
 
@@ -161,16 +161,16 @@ function create_new_agent_profile_basic($agent)
  * @param array $phase_form_ids
  * @return HTML
  */
-function phase_results_block($agent_number, $first_name, $phase_form_ids)
+function phase_results_block($agent_user_id, $agent_number, $first_name, $phase_form_ids)
 {
     // query the 3 form ids for latest result, return the 3 blocks back
     // 'phase' -> day of the week
 
-    $phaseOneQuery = fetch_phase_stats($agent_number, $phase_form_ids['phase_1_id'], '16');
-    $phaseTwoQuery = fetch_phase_stats($agent_number, $phase_form_ids['phase_2_id'], '1');
-    $phaseThreeQuery = fetch_phase_stats($agent_number, $phase_form_ids['phase_3_id'], '1');
-    $phaseFourQuery = fetch_phase_stats($agent_number, $phase_form_ids['phase_4_id'], '1');
-    $phaseFiveQuery = fetch_phase_stats($agent_number, $phase_form_ids['phase_5_id'], '1');
+    $phaseOneQuery = fetch_phase_stats($agent_user_id, $phase_form_ids['phase_1_id'], '40');
+    $phaseTwoQuery = fetch_phase_stats($agent_user_id, $phase_form_ids['phase_2_id'], '37');
+    $phaseThreeQuery = fetch_phase_stats($agent_user_id, $phase_form_ids['phase_3_id'], '46');
+    $phaseFourQuery = fetch_phase_stats($agent_user_id, $phase_form_ids['phase_4_id'], '46');
+    $phaseFiveQuery = fetch_phase_stats($agent_user_id, $phase_form_ids['phase_5_id'], '46');
 
     // long form logic to display icons and such
 
@@ -258,7 +258,7 @@ function phase_results_block($agent_number, $first_name, $phase_form_ids)
     $view_presentation_inspections = '<div style="text-align:center; margin-top: 10px;">
     <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
         title="' . $first_name . '\'s Presentation Inspection Results" href="https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?agent_id=' . $agent_number . '&mode=view"
-        target="_self"><span class="fusion-button-text">View Presentation Performance</span></a>
+        target="_self"><span class="fusion-button-text">'. $first_name .'\'s Field Training Results</span></a>
 </div></div>';
 
     // this button was intended to link to the presentation training dashboard, AJ's view. no need to render in each block, 
@@ -275,8 +275,9 @@ function phase_results_block($agent_number, $first_name, $phase_form_ids)
 
     $htmlContainerBottom = '</div>';
 
-    $htmlBlock = $htmlContainerTop . $phase_stats . $recording_submission_button . $view_presentation_inspections . $htmlContainerBottom;
-
+    // $htmlBlock = $htmlContainerTop . $phase_stats . $recording_submission_button . $view_presentation_inspections . $htmlContainerBottom;
+    $htmlBlock = $htmlContainerTop . $phase_stats . $view_presentation_inspections . $htmlContainerBottom;
+    
     // if ( !empty($phaseOneQuery) ) {
     //     print ('<pre style="magin-bottom:60px;">');
     //     var_dump($phaseOneQuery);
@@ -289,6 +290,9 @@ function phase_results_block($agent_number, $first_name, $phase_form_ids)
 function fetch_phase_stats($agentNumber, $form_id, $field_id)
 {
     // build API Query for form results
+
+    // add new field to each 5 forms to reference user ID
+
     $GFAPI_query = array(
         'field_filters' => array(
             'mode' => 'all',
