@@ -30,3 +30,34 @@ About Us, Frequently Asked Questions, Team Profiles, Careers
 
 850 franchises trust DiFilippo Agencies for their employee's benefits
 Been in business this long, greater company, etc
+
+
+# 3/29 1:00 PM Notes
+
+Website updates
+
+Billing:
+    Existing Customers
+        - Business ? -> QM email address @
+        - Individual Policy Holder ? -> BR139 @
+
+        - Contact Representative
+            ;contact point for DiFilippo agencies customer service
+
+Meet The Team
+    SA, AD, Agent? low interest on agent
+    Have contact information (phone and email) for the representative
+    profile photos?
+
+Community Tab
+    How do we use our page to show we have community involvement?
+    Local activities? What home office does?
+    "Make Tomorrow Better" -> millions of dollars gone out over x years?
+
+    Community to be added to slides?
+
+Careers
+    Hiring, Schedule Interviews
+    Contact Form by State
+    Include reviews relevant to career / testimonial
+    We're Hiring video, CLB video
