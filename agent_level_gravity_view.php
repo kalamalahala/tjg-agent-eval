@@ -74,27 +74,3 @@ function agent_level_gravity_view($atts)
     // return gravityview shortcode for relevant atts
     return $gravityViewShortcode;
 }
-
-
-add_action('gform_after_submission_75', 'set_entry_to_Submitted', 10, 2);
-function set_entry_to_Submitted($entry, $form) {
-    // get Unique ID from submission
-    $assignment_id = rgar($entry, '15');
-
-    // ask for matching entry from Phase One form? all 5 Phase forms?
-    // here's the 5 forms to query
-    // we want to find the entry that was created and has this unique ID, then adjust its Radio button for status to Submitted
-    $phase_form_ids = array(
-        'phase_1_id' => '71',
-        'phase_2_id' => '73',
-        'phase_3_id' => '74',
-        'phase_4_id' => '76',
-        'phase_5_id' => '77'
-    );
-
-    $gfAPIquery = array(
-        'meta' => $assignment_id
-    );
-
-    
-}

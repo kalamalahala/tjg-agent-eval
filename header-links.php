@@ -21,6 +21,13 @@ function dashboard__header($atts)
         }
     }
 
+    // add default case for Assignments to load current day
+    if ($_GET['mode'] == 'view' && !$_GET['phase']) {
+        if ($headerProperties['mode'] == 'single-new') {
+            reload_current_day();
+        } 
+    }
+
     // pull meta tags into user array based on agent_id parameter or current user
     $dashboard__user = array(
         'first_name' => get_user_meta($userToDisplay, 'first_name', true),
@@ -39,7 +46,7 @@ function dashboard__header($atts)
 
         case 'single-new':
             $page__title = '<div class="pageTitle">Your Assignments</div>';
-            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle"> Welcome, ' . $dashboard__user['first_name'] . '!</div>';
             $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
             break;
 
@@ -73,6 +80,12 @@ function dashboard__header($atts)
             $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
             break;
 
+        case 'recruiting':
+            $page__title = '<div class="pageTitle">Recruiting Portal</div>';
+            $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
+            $description__box = '<div class="descriptionBox">' . $dashboard__name__and__title . '</div>';
+            break;
+
         default:
             $page__title = '<div class="pageTitle">Leadership Dashboard</div>';
             $dashboard__name__and__title = '<div class="nameAndTitle">' . $dashboard__user['first_name'] . ' ' . $dashboard__user['last_name'] . ' - ' . $dashboard__user['agent_position'] . '</div>';
@@ -83,4 +96,19 @@ function dashboard__header($atts)
     }
 
     return $page__title . $description__box;
+}
+
+function reload_current_day() {
+    $phase_array = array(
+        'Monday' => 'one',
+        'Tuesday' => 'two',
+        'Wednesday' => 'three',
+        'Thursday' => 'four',
+        'Friday' => 'five'
+    );
+
+    $today_day_name = date('l', strtotime('today'));
+
+    header('Location: https://thejohnson.group/agent-portal/new-agent/training/?mode=view&phase=' . $phase_array[$today_day_name]);
+    return true;
 }
