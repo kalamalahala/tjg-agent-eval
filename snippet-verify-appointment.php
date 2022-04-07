@@ -27,5 +27,4 @@ function verify_calendar_invite() {
             echo 'Error: ' . $e;
         }
     }
-
 }

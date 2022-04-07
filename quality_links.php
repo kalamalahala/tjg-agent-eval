@@ -67,10 +67,20 @@ function login_panel_display_admin_buttons ( $atts ) {
             class="fusion-button-text">Verify Calendar Invites</span></a>
 </div></div>';
 
+    $recruiting_portal = '<div class="recruiting_portal"><div style="text-align:center;">
+    <a class="fusion-button button-3d button-large button-default button-2 fusion-button-span-yes"
+        title="Verify Calendar Invites"
+        href="https://thejohnson.group/agent-portal/recruiting/" target="_self" style="margin-bottom:20px;"><span
+            class="fusion-button-text">Recruiting Portal</span></a>
+</div></div>';
+
     /* Button Combinations */
+
+    // let's reorganize the button stack to be more apparent
 
     $admin_buttons = $divider_div_element . $pending_issue . $pending_business_tracker_manager . $persistency_tracker . $agent_evaluation . $corporate_training_dashboard . $invite_verification;
     $agent_buttons = $divider_div_2 . (($is_new_agent == 'true') ? $new_agent_portal : '' ) . $pending_business_tracker . $cal_invites . $wcn_report;
+    $recruiting_buttons = $divider_div_2 . $recruiting_portal;
     $corporate_trainer_buttons = $divider_div_2 . $agent_evaluation . $corporate_training_dashboard . $new_agent_portal;
     
     if ( empty($atts['mode']) ) {   
@@ -80,6 +90,8 @@ function login_panel_display_admin_buttons ( $atts ) {
             return $div_flex_box_opener . $agent_buttons . $div_flex_box_closer;
         } else if ( $agent_position == 'Corporate Trainer' ) {
             return $div_flex_box_opener . $corporate_trainer_buttons . $div_flex_box_closer;
+        } else if ( $agent_position == 'Director of Recruiting' ) {
+            return $div_flex_box_opener . $recruiting_buttons . $div_flex_box_closer;
         } else {
             return null;
         }
