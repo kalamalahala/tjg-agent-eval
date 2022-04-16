@@ -56,7 +56,7 @@ function display_new_agents_in_training($atts)
                 ),
                 array(
                     'key' => 'is_dashboard_visible',
-                    'value' => 'hidden',
+                    'value' => 'false',
                     'compare' => '!='
                 )
             )
@@ -155,7 +155,7 @@ function create_new_agent_profile_basic($agent, $create_button_logic)
 
     //HTML sections with css from Avada
     $opening_div = '<div class="person__container__wrapper"><div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
-    $img_a_end_div = '<img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></div> </div> ';
+    $img_a_end_div = '<img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"><div class="person-toggle-container"><a href="https://thejohnson.group/agent-portal/corporate-training/?toggle_visible_agent_id=' . $agent_number . '" target="_self" title="Toggle Visibility"><i class="fa-solid fa-magnifying-glass"></i>&nbsp Toggle Visibility</a></div></div></div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
 

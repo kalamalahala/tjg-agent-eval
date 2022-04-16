@@ -6,9 +6,19 @@
 
 function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPosition, $mode)
 {
+    
     //grab ID and email from argument object, grab the rest from meta tags, assemble First and Last name
     $user_id = $agent_object->ID;
     $email_address = $agent_object->user_email;
+    // escape if hidden
+    $visibility = get_user_meta($user_id, 'is_dashboard_visible', true);
+    if ($visibility == 'false') return; 
+
+    // print '<pre style="margin-bottom: 60px;">';
+    // var_dump($visibility);
+    // print '</pre>';
+
+
     $agent_number = get_user_meta($user_id, 'agent_number', true);
     $first_name = get_user_meta($user_id, 'first_name', true);
     $last_name = get_user_meta($user_id, 'last_name', true);
@@ -37,7 +47,7 @@ function show_agent_profile_individual($agent_object, $sa_Number, $viewerAgentPo
 
     //HTML sections with css from Avada
     $opening_div = '<div class="fusion-person person fusion-person-center fusion-person-icon-top"> <div class="person-shortcode-image-wrapper"> <div class="person-image-container hover-type-none dropshadow" >';
-    $img_a_end_div = '<a href="#"><img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"></a></div> </div> ';
+    $img_a_end_div = '<img src="' . $pic_url . '" alt="' . $agent_name . '" width="200" height="300" class="person-img img-responsive wp-image-4666 lazyautosizes lazyloaded"><div class="person-toggle-container"><a href="https://thejohnson.group/agent-portal/quality-portal/agent-training/?toggle_visible_agent_id=' . $agent_number . '" target="_self" title="Toggle Visibility"><i class="fa-solid fa-magnifying-glass"></i>&nbsp Toggle Visibility</a></div></div> </div> ';
     $name_and_agent_number = '<div class="person-desc"> <div class="person-author"> <div class="person-author-wrapper"><span class="person-name">' . $agent_name . '</span><span class="person-title">Agent Number: ' . $agent_number . '</span></div> </div>';
     $text_block = '<div class="person-content fusion-clearfix"> <p>Email: <a href="mailto:' . $email_address . '" target="_blank">' . ((!empty($email_address)) ? $email_address : 'No Email Address') . '</a><br />Phone Number: <a href="tel:' . $phone_number . '" target="_blank">' . ((!empty($phone_number)) ? $phone_number : 'No Phone Number') . '</a></p>';
     $badges = '<ul><li><strong>Field Training</strong></li><a href="https://thejohnson.group/agent-portal/quality-portal/agent-training/presentation-inspection/?agent_id=' . $agent_number . '&mode=view" target="_blank"><li><strong>View Exams</strong></li></a><li class="testScores">' . $badge_HTML . '</li>';
@@ -214,33 +224,63 @@ function display_agent_hierarchy($atts)
     $agentNumber = get_user_meta($userToDisplay, 'agent_number', true);
     $agentPosition = get_user_meta($userToDisplay, 'agent_position', true);
 
+    // $new_agent_query = array(
+    //     'meta_query' => array(
+    //         'relation' => 'AND',
+    //         array(
+    //             'key' => 'is_new_agent',
+    //             'value' => 'true',
+    //             'compare' => '='
+    //         ),
+    //         array(
+    //             'key' => 'agency_name',
+    //             'value' => $vars['agency_name'],
+    //             'compare' => '='
+    //         ),
+    //         array(
+    //             'key' => 'is_dashboard_visible',
+    //             'value' => 'false',
+    //             'compare' => '!='
+    //         )
+    //     )
+    // );
+
     // Check mode parameter and change functionality
     switch ($agentPosition) {
         case 'Corporate Trainer':
             $downlineQuery = array(
-                'meta_key' => 'is_new_agent',
-                'meta_value' => 'true'
-            );
+                        'meta_key' => 'is_new_agent',
+                        'meta_value' => 'true',
+                        'meta_compare' => '='
+                    );
             break;
+
         default:
             // Select all users where saNumber = $agentNumber
             $downlineQuery = array(
-                'meta_key' => 'saNumber',
-                'meta_value' => $agentNumber
-            );
+                        'meta_key' => 'saNumber',
+                        'meta_value' => $agentNumber,
+                        'meta_compare' => '='
+                    );
             break;
     }
 
+    
     if ($vars['mode'] == 'single') {
         $downlineQuery = array(
             'meta_key' => 'agent_number',
             'meta_value' => $agentNumber
         );
     }
-
-
+    
+    
     // ask for an array of Users, begin empty string
     $findDownline = get_users($downlineQuery);
+    // var_dump($downlineQuery);
+    // print '<br><pre style="margin-bottom:60px;">';
+    // var_dump($findDownline);
+    // print '</pre>';
+    // die;
     $hierarchyHTML = '';
 
     // run the profile builder for each User in the array
